@@ -38,12 +38,13 @@
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: burlywood;
+  background-color: slateblue;
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 60px;
 }
 .side-menu-list button {
+  color:white;
   margin: 5px;
   border: none;
   background: none;
