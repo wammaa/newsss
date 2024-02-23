@@ -1,6 +1,7 @@
 const API_KEY = `ba6cff8a0208485f8e5d2cdcbf812b9a`;
 let newsList = [];
 const menus = document.querySelectorAll('.menu-bar button');
+let url = new URL(`https://newswen.netlify.app//top-headlines?country=kr&apiKey=${API_KEY}`);
 
 menus.forEach(menu=>menu.addEventListener("click", (event)=>getNewsByCategory(event)));
 
@@ -21,35 +22,42 @@ const openSearchBox = () => {
   }
 };
 
+const getNews=async()=>{
+  try{
+    const response = await fetch(url);
+    const data = await response.json();
+    if(response.status === 200){
+      if(data.articles.length === 0){
+        throw new Error("No result for this search")
+      }
+      newsList = data.articles;
+      render();
+    }else{
+      throw new Error(data.message)
+    }
+    
+  }catch(error){
+    errorRender(error.message)
+  }
+  
+}
+
 const getLatestNews = async() =>{
-  const url = new URL(`https://newswen.netlify.app//top-headlines?country=kr&apiKey=${API_KEY}`);
-  const response = await fetch(url);
-  const data = await response.json();
-  newsList = data.articles;
-  render();
-  console.log("rrrr", newsList);
+  url = new URL(`https://newswen.netlify.app//top-headlines?country=kr&apiKey=${API_KEY}`);
+  getNews();
 }
 
 const getNewsByCategory=async(event)=>{
   const category = event.target.textContent.toLowerCase();
-  const url = new URL(`https://newswen.netlify.app//top-headlines?country=kr&category=${category}&apiKey=${API_KEY}`);
-  const response = await fetch(url);
-  const data = await response.json();
-  newsList = data.articles;
-  render();
+  url = new URL(`https://newswen.netlify.app//top-headlines?country=kr&category=${category}&apiKey=${API_KEY}`);
+  getNews();
 }
 
 const getNewByKeyword=async()=>{
   const keyword = document.getElementById('search-input').value;
-  const url = new URL(`https://newswen.netlify.app//top-headlines?country=kr&q=${keyword}&apiKey=${API_KEY}`)
-  const response = await fetch(url);
-  const data = await response.json();
-  console.log("Aaaa", data)
-  newsList = data.articles;
-  render()
+  url = new URL(`https://newswen.netlify.app//top-headlines?country=kr&q=${keyword}&apiKey=${API_KEY}`)
+  getNews();
 }
-
-
 
 const render=()=>{
   const newsHTML = newsList.map(news=>`<div class="row news">
@@ -70,4 +78,9 @@ const render=()=>{
   document.getElementById('news-board').innerHTML=newsHTML;
 }
 
+const errorRender=(errorMessage)=>{
+  const errorHTML = `<div class="alert alert-danger" role="alert">
+  ${errorMessage}</div>`
+  document.getElementById('news-board').innerHTML=errorHTML;
+}
 getLatestNews();
