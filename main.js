@@ -95,6 +95,7 @@ const errorRender=(errorMessage)=>{
 }
 
 const paginationRender=()=>{
+  paginationHTML = ``;
   const totalPages = Math.ceil(totalResults/pageSize);
   const pageGroup = Math.ceil(page/groupSize);
   let lastPage = pageGroup * groupSize;
@@ -102,12 +103,21 @@ const paginationRender=()=>{
     lastPage = totalPages;
   }
   const firstPage = lastPage - (groupSize - 1)<=0? 1:lastPage - (groupSize - 1);
-  let paginationHTML = `<li class="page-item" onclick="moveToPage(${page-1})"><a class="page-link" href="#">&lt;</a></li>`;
-
+  if(page>=2){
+    paginationHTML = `<li class="page-item" onclick="pageClick(1)">
+  <a class="page-link" href='#js-bottom'>&lt;&lt;</a>
+</li>
+<li class="page-item" onclick="moveToPage(${page-1})"><a class="page-link" href="#">&lt;</a></li>`;
+  }
   for(let i = firstPage; i<=lastPage; i++){
     paginationHTML += `<li class="page-item ${i===page?"active":''}" onclick="moveToPage(${i})"><a class="page-link">${i}</a></li>`
   }
-  paginationHTML += `<li class="page-item" onclick="moveToPage(${page+1})"><a class="page-link" href="#">&gt;</a></li>`;
+  if(page<totalPages){
+    paginationHTML += `<li class="page-item" onclick="moveToPage(${page+1})"><a class="page-link" href="#">&gt;</a></li>
+  <li class="page-item" onclick="pageClick(${totalPages})">
+                        <a class="page-link" href='#js-bottom'>&gt;&gt;</a>
+                      </li>`;
+  }
   document.querySelector(".pagination").innerHTML = paginationHTML;
 }
 
@@ -116,4 +126,11 @@ const moveToPage=(pageNum)=>{
   page = pageNum;
   getNews();
 }
+
+const pageClick=(pageNum)=>{
+  page = pageNum;
+  getNews();
+}
+
+
 getLatestNews();
